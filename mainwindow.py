@@ -36,12 +36,12 @@ class myPixmap(QtWidgets.QGraphicsPixmapItem):
     def mousePressEvent(self, event):
         if event.buttons () == QtCore.Qt.LeftButton:
             self.__record=True
-            theModel.addPos(float(event.pos().x())/theModel.getPictureSize()[1]/0.137,float(event.pos().y())/theModel.getPictureSize()[0]/0.135)
+            theModel.addPos(float(event.pos().x())/theModel.getPictureSize()[1]/0.853,float(event.pos().y())/theModel.getPictureSize()[0]/0.848)
     
     def mouseReleaseEvent(self,event):
         if self.__record==True:
             self.__record=False
-            theModel.addPos(float(event.pos().x())/theModel.getPictureSize()[1]/0.137,float(event.pos().y())/theModel.getPictureSize()[0]/0.135)
+            theModel.addPos(float(event.pos().x())/theModel.getPictureSize()[1]/0.853,float(event.pos().y())/theModel.getPictureSize()[0]/0.848)
         theModel.clear()
         self.__mainwindow.setPixmap()
 
@@ -129,6 +129,9 @@ class Ui_Dialog(object):
         self.sizeSliderFreq.valueChanged.connect(self.rankChange)
         self.horizontalSlider.valueChanged.connect(self.sizeFreqChange)
         self.checkBoxIfErase.stateChanged.connect(self.ifEraseChange)
+        self.comboBox.currentIndexChanged.connect(self.windowChange)
+
+        self.fileName = None
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
@@ -160,7 +163,7 @@ class Ui_Dialog(object):
         self.graphicsView.setScene(self.scene)
 
     def load(self):
-        self.fileName, filetype = QtWidgets.QFileDialog.getOpenFileName(None,  "选取音频",  os.getcwd(),"Wav Files (*.wav)")
+        self.fileName, filetype = QtWidgets.QFileDialog.getOpenFileName(None,  "Choose Source Audio",  os.getcwd(),"Wav Files (*.wav)")
         if self.fileName=='':
             return
         theModel.changeAudio(self.fileName,self.comboBox.currentText())
@@ -174,13 +177,14 @@ class Ui_Dialog(object):
 
 
     def save(self):
-        fileName_choose, filetype = QtWidgets.QFileDialog.getSaveFileName(None,  "选取保存位置",  os.getcwd(),"Wav Files (*.wav)")
+        fileName_choose, filetype = QtWidgets.QFileDialog.getSaveFileName(None,  "Choose Saving Direction",  os.getcwd(),"Wav Files (*.wav)")
         if fileName_choose=='':
             return
         theModel.save(fileName_choose)
         
     def redo(self):
-        theModel.changeAudio(self.fileName,self.comboBox.currentText())
+        if not self.fileName is None:
+            theModel.changeAudio(self.fileName,self.comboBox.currentText())
         self.setPixmap()
 
     
@@ -192,6 +196,11 @@ class Ui_Dialog(object):
     
     def ifEraseChange(self):
         theModel.setErase(self.checkBoxIfErase.isChecked())
+    
+    def windowChange(self):
+        if not self.fileName is None:
+            theModel.changeAudio(self.fileName,self.comboBox.currentText())
+        self.setPixmap()
     
     def rankChange(self,value):
         _translate = QtCore.QCoreApplication.translate
